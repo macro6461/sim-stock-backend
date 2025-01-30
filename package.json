@@ -1,6 +1,6 @@
 {
     "name": "sim-stock-backend",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "main": "index.js",
     "license": "MIT",
     "description": "This is the backend code for my SimStock React App.",
@@ -10,9 +10,11 @@
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
+        "google-auth-library": "^9.15.1",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.9.5",
-        "nodemon": "^3.1.9"
+        "nodemon": "^3.1.9",
+        "ws": "^8.18.0"
     },
     "scripts": {
         "start": "nodemon server.js"

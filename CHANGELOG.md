@@ -2,6 +2,13 @@
 
 This file tracks released versions with the changes made to this project.
 
+## Version 1.0.3
+
+### Added
+
+- Added API request for Google OAuth.
+- Added API logic to support WebSockets.
+
 ## Version 1.0.2
 
 ### Added
