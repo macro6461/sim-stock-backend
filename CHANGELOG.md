@@ -2,6 +2,12 @@
 
 This file tracks released versions with the changes made to this project.
 
+## Version 1.0.2
+
+### Added
+
+- Including `username` in JWT token signing and verification response.
+
 ## Version 1.0.1
 
 ### Added

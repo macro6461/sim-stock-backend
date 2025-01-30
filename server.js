@@ -34,7 +34,7 @@ app.post("/register", async (req, res) => {
 
   // Check if user exists
   const existingUser = await User.findOne({ username });
-  console.log(existingUser)
+
   if (existingUser) return res.status(400).json({ message: "User already exists" });
 
   // Hash the password
@@ -51,8 +51,6 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  console.log("HHHAAAA")
-
   // Find the user
   const user = await User.findOne({ username });
   if (!user) return res.status(400).json({ message: "Invalid credentials" });
@@ -62,8 +60,8 @@ app.post("/login", async (req, res) => {
   if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
   // Generate token
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  console.log("USERNAME: ", username)
+  const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
   res.json({ token, username });
 });
 
@@ -73,8 +71,7 @@ app.get("/", (req, res) => {
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("VERIFIED: ", verified)
+    const verified = jwt.verify(token, process.env.JWT_SECRET)
     res.json({ message: "Welcome to your profile", user: verified });
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
