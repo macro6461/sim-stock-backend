@@ -1,6 +1,6 @@
 {
     "name": "sim-stock-backend",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "main": "index.js",
     "license": "MIT",
     "description": "This is the backend code for my SimStock React App.",

@@ -2,6 +2,15 @@
 
 This file tracks released versions with the changes made to this project.
 
+## Version 1.0.4
+
+### Added
+
+- Added jwt key verification in registration request.
+- Improved error handling.
+- Added `email` as a requirement for `User` schema as the sign in will now offer either Google OAuth or signing in/registering with email and password.
+    - Username will be generated from the provided email.
+
 ## Version 1.0.3
 
 ### Added
