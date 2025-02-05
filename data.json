@@ -1,0 +1,57 @@
+{
+    "questions": [
+        {
+            "question": "Instructions on SimStock Usage",
+            "answer": "In order to use SimStock, you must first select the stock symbols you want to simulate. Once you select the symbols, you can then add what capital you would like to use for the simulation ot the nearest whole number. Then you can simulate! The first simulation will evenly split the allocation amongst all symbols. For example, if you used 100,000 as capital, and selected four symbols to compare/simulate, then each symbol will have an allocation of 25% of your capital (or $25,000 each). You can then update the capital for each individual stock to see how your returns would've changed depending on amount allocated. You change the allocation for a stock, click 'Reallocate' and the table and graphs will update accordingly."
+        },
+        {
+            "question": "How to use SimStock",
+            "answer": "In order to use SimStock, you must first select the stock symbols you want to simulate. Once you select the symbols, you can then add what capital you would like to use for the simulation ot the nearest whole number. Then you can simulate! The first simulation will evenly split the allocation amongst all symbols. For example, if you used 100,000 as capital, and selected four symbols to compare/simulate, then each symbol will have an allocation of 25% of your capital (or $25,000 each). You can then update the capital for each individual stock to see how your returns would've changed depending on amount allocated. You change the allocation for a stock, click 'Reallocate' and the table and graphs will update accordingly."
+        },
+        {
+            "question": "Getting started",
+            "answer": "In order to use SimStock, you must first select the stock symbols you want to simulate. Once you select the symbols, you can then add what capital you would like to use for the simulation ot the nearest whole number. Then you can simulate! The first simulation will evenly split the allocation amongst all symbols. For example, if you used 100,000 as capital, and selected four symbols to compare/simulate, then each symbol will have an allocation of 25% of your capital (or $25,000 each). You can then update the capital for each individual stock to see how your returns would've changed depending on amount allocated. You change the allocation for a stock, click 'Reallocate' and the table and graphs will update accordingly."
+        },
+        {
+            "question": "How is allocation calculated",
+            "answer": "For a new simulation, allocation is split evenly amongst the number of symbols you've selected for comparison. When you update the allocation after the fact, the app will keep track of which rows you've updated. Any rows that were not updated will change automatically to fit within the constraints of the existing capital as well as changed values. \n For example, if you started a new simulation with just 4 stocks, and have an initial capital amount of 100,000, the allocation defaults to 25% (25,000) each. You can then adjust the allocation by pulling the slider to adjust the percent allocation. This will update not just the currently selected symbol's allocation percentage, but will also proportionally update the percentages of the others as well. \n Say you slide the allocation about from 25% to 20% for the first symbol. This means when you submit the allocation, the other three symbols will have their allocations updated to 80% / 3 symbols (about 26.66% each). If you change another one to, say, 15%, then the first symbol will remain 20% of allocation, and the remaining two will update proportionally. In this case, the remaining two would be split evenly among the remaining 65%, resulting in 32.5% each."
+        },
+        {
+            "question": "I don't understand allocation",
+            "answer": "For a new simulation, allocation is split evenly amongst the number of symbols you've selected for comparison. When you update the allocation after the fact, the app will keep track of which rows you've updated. Any rows that were not updated will change automatically to fit within the constraints of the existing capital as well as changed values. \n For example, if you started a new simulation with just 4 stocks, and have an initial capital amount of 100,000, the allocation defaults to 25% (25,000) each. You can then adjust the allocation by pulling the slider to adjust the percent allocation. This will update not just the currently selected symbol's allocation percentage, but will also proportionally update the percentages of the others as well. \n Say you slide the allocation about from 25% to 20% for the first symbol. This means when you submit the allocation, the other three symbols will have their allocations updated to 80% / 3 symbols (about 26.66% each). If you change another one to, say, 15%, then the first symbol will remain 20% of allocation, and the remaining two will update proportionally. In this case, the remaining two would be split evenly among the remaining 65%, resulting in 32.5% each."
+        },
+        {
+            "question": "What is the difference between manual and responsive what is reset",
+            "answer": "By default, all symbols are 'responsive' when it comes to calculating capital allocation. This means they will update based on the capital amount evenly distributed amongst other symbols. When you change a symbol's allocation value, it is flagged as 'manual', meaning it will only update based on what the user types in. Any other symbols that are still 'responsive' will respond accordingly. To make a symbols allocation go back to 'responsive' from manual, you simply click the 'reset' button. This will make the current symbol's capital be allocated based on the available percentage allocation based on the other symbols. To reset all symbol allocations to default, you can select the 'reset all' button at the top of the table."
+        },
+        {
+            "question": "What does reset do for the symbols",
+            "answer": "By default, all symbols are 'responsive' when it comes to calculating capital allocation. This means they will update based on the capital amount evenly distributed amongst other symbols. When you change a symbol's allocation value, it is flagged as 'manual', meaning it will only update based on what the user types in. Any other symbols that are still 'responsive' will respond accordingly. To make a symbols allocation go back to 'responsive' from manual, you simply click the 'reset' button. This will make the current symbol's capital be allocated based on the available percentage allocation based on the other symbols. To reset all symbol allocations to default, you can select the 'reset all' button at the top of the table."
+        },
+        {
+            "question": "reset symbol allocation to default",
+            "answer": "By default, all symbols are 'responsive' when it comes to calculating capital allocation. This means they will update based on the capital amount evenly distributed amongst other symbols. When you change a symbol's allocation value, it is flagged as 'manual', meaning it will only update based on what the user types in. Any other symbols that are still 'responsive' will respond accordingly. To make a symbols allocation go back to 'responsive' from manual, you simply click the 'reset' button. This will make the current symbol's capital be allocated based on the available percentage allocation based on the other symbols. To reset all symbol allocations to default, you can select the 'reset all' button at the top of the table."
+        },
+        {
+            "question": "reset all allocations",
+            "answer": "To reset all allocations to be responsive (all evenly distributed amongst the available capital divided by the number of symbols), click the 'Reset All' button above the allocation table."
+        },
+        {
+            "question": "Thank you",
+            "answer": "No problemo! Feel free to reach out again if you have any other questions."
+        },
+        {
+            "question": "Thanks",
+            "answer": "No problemo! Feel free to reach out again if you have any other questions."
+        },
+        {
+            "question": "Thank you",
+            "answer": "No problemo! Feel free to reach out again if you have any other questions."
+        },
+        {
+            "question": "Gracias",
+            "answer": "No problemo! Feel free to reach out again if you have any other questions."
+        }
+
+    ]
+}

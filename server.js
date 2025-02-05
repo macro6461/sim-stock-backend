@@ -8,6 +8,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const WebSocket = require("ws"); // Import WebSocket module
+const { stringSimilarity } = require('string-similarity-js');
+const data = require('./data.json')
 
 const app = express();
 const server = http.createServer(app); 
@@ -124,16 +126,15 @@ app.post("/google-login", async (req, res) => {
 // WebSocket connection handling
 wss.on("connection", (ws) => {
   console.log("Client connected");
-
+  wss.clients.forEach((client) => {
+    handleWelcomeOrConversation(client);
+  })
   // Listen for messages from clients
   ws.on("message", (message) => {
     console.log(`Received: ${message}`);
-
     // Broadcast the message to all clients
     wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(`Server Echo: ${message}`);
-      }
+      handleWelcomeOrConversation(client, message);
     });
   });
 
@@ -143,6 +144,46 @@ wss.on("connection", (ws) => {
 
 const genUserNameFromEmail = (email) => {
     return email.split("@")[0]
+}
+
+const handleWelcomeOrConversation = (client, message) => {
+  if (client.readyState === WebSocket.OPEN) {
+    let messageStr = message ? message.toString() : null
+    if (messageStr){
+      // send back initial message for chat recording
+      client.send(`${message}`)
+      // send a response message based on input 
+      let res = findResponse(`${message}`)
+      if (res.indexOf("I'm sorry") > -1 || res.indexOf("No problemo!") > -1){
+        client.send(res);
+      } else {
+        client.send(res + "\n Can I help you with anything else?");
+      }
+    } else {
+      client.send("Hello! I am your SimStock Assistant. How can I help you today? You start by asking how to use SimStock, how is allocation re-calculation performed, how to upgrade to pro, and more!")
+    }
+  } else {
+    console.log("CLIENT NOT READY: ", client.readyState === WebSocket.OPEN )
+  }
+}
+
+const findResponse = (message) => {
+  let highest = 0;
+  let index = -1;
+  let {questions} = data;
+  questions.forEach((q, i)=>{
+    let question = q.question
+    let match = message.length < 10 ? stringSimilarity(message, question, 1) : stringSimilarity(message, question)
+    index = match > highest ? i : index 
+    highest = match > highest ? match : highest 
+  })
+
+
+  if (highest > 0.5) { // Adjust the threshold as needed
+    return questions[index].answer;
+  } else {
+    return "I'm sorry, I don't understand your question. Could you rephrase it?";
+  }
 }
 
 // Start the server

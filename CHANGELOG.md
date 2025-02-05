@@ -2,6 +2,13 @@
 
 This file tracks released versions with the changes made to this project.
 
+## Version 1.0.5
+
+### Added
+
+- Built more robust message handling for web sockets, including json data to allow for pre-seeded answers for questions.
+- Using `string-similarity-js` to evaluate which question/answer combo most closely relates to the message from the ChatWindow.
+
 ## Version 1.0.4
 
 ### Added
