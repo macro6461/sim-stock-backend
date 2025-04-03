@@ -10,6 +10,17 @@ const cors = require("cors");
 const WebSocket = require("ws"); // Import WebSocket module
 const { stringSimilarity } = require('string-similarity-js');
 const data = require('./data.json')
+const apicache = require('apicache')
+const cache = apicache.middleware
+
+const simulations = [
+  { id: "sim-001", name: "Simulation A", createdAt: "2024-04-01", userId: null},
+  { id: "sim-002", name: "Simulation B", createdAt: "2024-04-02", userId: null},
+  { id: "sim-003", name: "Simulation C", createdAt: "2024-04-02", userId: null },
+  { id: "sim-004", name: "Simulation D", createdAt: "2024-04-02", userId: null }
+]
+
+let cacheMem = {etag: null, lastModified: null}
 
 const app = express();
 const server = http.createServer(app); 
@@ -87,6 +98,51 @@ app.get("/", (req, res) => {
         res.status(401).json({ message: "Invalid token" });
     }
 });
+
+app.get("/:userId/simulations", cache('5 minutes'), async (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+  try {
+      const verified = jwt.verify(token, process.env.JWT_SECRET)
+      let userId = req.params.userId 
+      if (verified.id !== userId){
+        return res.status(403).json({ message: "Forbidden: You can only access your own simulations" });
+      }
+      const headers = {}
+      const {etag, lastModified} = cacheMem;
+      if (etag){
+        headers['If-None-Match'] = etag
+      }
+      if (lastModified){
+        headers['If-Modified-Since'] = lastModified
+      }
+
+      const response = await fetch("http://localhost:1993/:userId/simulations", {headers})
+
+      if (response.status === 304){
+        // Fetch the cached response from apicache
+        const cachedResponse = apicache.getIndex()[req.originalUrl]?.value;
+        
+        if (cachedResponse) {
+          return res.status(200).json(cachedResponse);
+        } else {
+          return res.status(304).end();
+        }
+      }
+
+      const simulations = await getUserSimulations(userId)
+      cacheMem.etag = req.headers.get("etag")
+      cacheMem.lastModified = req.headers.get("last-modified")
+      return res.json({simulations})
+  } catch (err) {
+      res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+// Mock function: Simulates fetching user simulations from DB
+async function getUserSimulations(userID) {
+  return simulations.filter(sim=>sim.userId === userID)
+}
 
 app.post("/google-login", async (req, res) => {
     const { token } = req.body;
