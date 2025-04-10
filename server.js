@@ -11,15 +11,9 @@ const WebSocket = require("ws"); // Import WebSocket module
 const { stringSimilarity } = require('string-similarity-js');
 const data = require('./data.json')
 const apicache = require('apicache')
+const Simulation = require("./models/Simulation"); // adjust path as needed
+const User = require("./models/User"); 
 const cache = apicache.middleware
-
-const simulations = [
-  { id: "sim-001", name: "Simulation A", createdAt: "2024-04-01", userId: null},
-  { id: "sim-002", name: "Simulation B", createdAt: "2024-04-02", userId: null},
-  { id: "sim-003", name: "Simulation C", createdAt: "2024-04-02", userId: null },
-  { id: "sim-004", name: "Simulation D", createdAt: "2024-04-02", userId: null }
-]
-
 let cacheMem = {etag: null, lastModified: null}
 
 const app = express();
@@ -30,21 +24,46 @@ const wss = new WebSocket.Server({ server }); // Attach WebSocket server
 app.use(express.json());
 app.use(cors());
 
+
+// const User = mongoose.model("User", userSchema);
+
+app.get("/data", cache("5 minutes"), async (req, res)=>{
+  try {
+    const {etag, lastModified} = cacheMem
+    const headers = {}
+    if (etag){
+      headers['If-None-Match'] = etag;
+    }
+
+    if (lastModified){
+      headers['If-Modified-Since'] = lastModified
+    }
+
+    const response = await fetch("http://myUrl.com", {headers})
+
+    if (response.status === 304){
+      return res.status(200).json(apicache.getIndex()[req.originalUrl]?.value)
+    } 
+
+    const newResponse = await res.json()
+
+    cacheMem.etag = newResponse.headers.get("etag") 
+    cacheMem.lastModified = newResponse.headers.get("last-modified")
+
+    return res.status(200).json(newResponse)
+
+
+  } catch (e){
+    console.error(`${e.message}`)
+  }
+});
+
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/login-system", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("MongoDB connection error:", err));
-
-// User Schema
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: {type: String, required: true, unique: true}
-});
-
-const User = mongoose.model("User", userSchema);
 // Routes
 
 // Register Route
@@ -100,29 +119,29 @@ app.get("/", (req, res) => {
 });
 
 app.get("/:userId/simulations", cache('5 minutes'), async (req, res) => {
-  const { token } = req.body;
+  const token = req.headers['authorization'];
   if (!token) return res.status(401).json({ message: "Unauthorized" });
+  const userId = req.params.userId 
   try {
+  
       const verified = jwt.verify(token, process.env.JWT_SECRET)
-      let userId = req.params.userId 
       if (verified.id !== userId){
         return res.status(403).json({ message: "Forbidden: You can only access your own simulations" });
       }
       const headers = {}
       const {etag, lastModified} = cacheMem;
+     
       if (etag){
         headers['If-None-Match'] = etag
       }
+  
       if (lastModified){
         headers['If-Modified-Since'] = lastModified
       }
 
-      const response = await fetch("http://localhost:1993/:userId/simulations", {headers})
-
-      if (response.status === 304){
+      if (res.status === 304){
         // Fetch the cached response from apicache
         const cachedResponse = apicache.getIndex()[req.originalUrl]?.value;
-        
         if (cachedResponse) {
           return res.status(200).json(cachedResponse);
         } else {
@@ -130,19 +149,79 @@ app.get("/:userId/simulations", cache('5 minutes'), async (req, res) => {
         }
       }
 
-      const simulations = await getUserSimulations(userId)
-      cacheMem.etag = req.headers.get("etag")
-      cacheMem.lastModified = req.headers.get("last-modified")
-      return res.json({simulations})
+      const simulations = await Simulation.find({ userId });
+
+      const newEtag = `"${Buffer.from(JSON.stringify(simulations)).toString('base64')}"`;
+      res.setHeader("ETag", newEtag);
+
+      cacheMem.etag = newEtag;
+      cacheMem.lastModified = new Date().toUTCString();
+
+      return res.status(200).json({ simulations });
   } catch (err) {
       res.status(401).json({ message: "Invalid token" });
   }
 });
 
-// Mock function: Simulates fetching user simulations from DB
-async function getUserSimulations(userID) {
-  return simulations.filter(sim=>sim.userId === userID)
-}
+app.post("/simulations", async (req, res) => {
+  const { userId, data } = req.body;
+  const token = req.headers['authorization'];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    
+    if (verified.id !== userId) {
+      return res.status(403).json({ message: "Forbidden: Invalid user" });
+    }
+
+    const simulation = new Simulation({
+      userId,
+      data,
+    });
+
+    const saved = await simulation.save();
+
+    res.status(201).json({
+      message: "Simulation saved successfully",
+      data: saved,
+    });
+  } catch (error) {
+    console.error("Save error:", error.message);
+    res.status(400).json({ message: "Failed to save simulation", error: error.message });
+  }
+});
+
+app.delete('/simulations/:simulationId', async (req, res) =>{
+  const token = req.headers['authorization'];
+  const { simulationId } = req.params;
+  const { userId } = req.query
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized: No token provided' });
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (verified.id !== userId) {
+      return res.status(403).json({ message: 'Forbidden: Invalid user' });
+    }
+
+    const deleted = await Simulation.findOneAndDelete({
+      _id: simulationId,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Simulation not found' });
+    }
+
+    return res.status(200).json({ message: 'Simulation deleted successfully' });
+  } catch (err) {
+    console.error('Delete error:', err);
+    return res.status(400).json({ message: 'Failed to delete simulation', error: err.message });
+  }
+})
 
 app.post("/google-login", async (req, res) => {
     const { token } = req.body;
